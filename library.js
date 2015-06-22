@@ -139,6 +139,25 @@ plugin.filterCategory = function(data, callback) {
 	}
 };
 
+plugin.handleTopicMove = function(data) {
+	if (parseInt(data.fromCid, 10) === parseInt(plugin.config.cid, 10)) {
+		data.uid = 0;
+		Topics.setTopicField(data.tid, 'uid', '0', function(e,d) { });
+		Topics.getPids(data.tid, function(err, pids) {
+			if (err) {
+				return winston.error(err.message);
+			}
+
+			if (!Array.isArray(pids) || !pids.length) {
+				return;
+			}
+
+			Posts.setPostField(pids[0], 'uid', 0, function() {});
+
+		});
+	}
+}
+
 /* Admin stuff */
 
 plugin.addAdminNavigation = function(header, callback) {
